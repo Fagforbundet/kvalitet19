@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 library(readxl)
 library(tidyverse)
+library(ggpubr)
 
 #Importerer bakgrunnstallene fra NHOanalysen og tall på privatisering fra SSB 12367
 
@@ -102,8 +103,9 @@ ggplot(sammenkoblet, aes(y = `Score, kvalitet`, x = Andel))+
   geom_point()+
   xlim(0,40)+
   geom_smooth(method='lm')+
-  xlab("Kvalitetsscore")+
-  ggtitle("Kvalitet vs. kjøp fra eksterne")
+  ylab("Kvalitetsscore")+
+  ggtitle("Kvalitet vs. kjøp fra eksterne")+
+  stat_cor(method = "pearson", label.x = 25, label.y = 35)
 
 
 ```
