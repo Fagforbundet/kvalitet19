@@ -1,7 +1,7 @@
 ---
 title: "Kvalitet til stryk"
-author: "Thomas Tallaksen"
-date: "9/03/2019"
+author: "Thomas Tallaksen, rådgiver Fagforbundet"
+date: "3. September 2019"
 output: pdf_document
 ---
 
@@ -74,15 +74,15 @@ Dersom vi ser på den den bivariate sammenhengen mellom andelen eksterne kjøp o
 ```{r corr, warning = FALSE, fig.height = 3.5, fig.width = 4, fig.align = "center"}
 
 samlet <- ssb%>%
-  filter(Artikkelnummer %in% c("AG2", "A370", "AGD4", "A590"))%>%
-  filter(Funksjon != "Institusjonslokaler" | Artikkelnummer != "A370")%>%
+  filter(Artikkelnummer %in% c("AG2", "A370", "AGD4", "A590"))%>% #Filtrerer til kun de relevante artiklene
+  filter(Funksjon != "Institusjonslokaler" | Artikkelnummer != "A370")%>% #Fjerner kjøp på A370 og institusjonslokaler
   group_by(Kommunenummer, Kommune, Funksjon, Artikkelnummer, Artikkel)%>%
   summarise(Kostnad = sum(Beløp, na.rm = TRUE))%>%  
   ungroup()%>%   
   mutate(Deler = ifelse(Artikkelnummer %in% c("A370", "AG2"), "Kjøp", "Kostnader"))%>%
   mutate(Kostnad = ifelse(Artikkelnummer == "A590", -Kostnad, Kostnad))%>%
   group_by(Kommunenummer, Kommune, Deler)%>%
-  summarise(Kostnad = sum(Kostnad))%>%
+  summarise(Kostnad = sum(Kostnad))%>% # Summerer kostnadene minus avskrivningene og kjøpene
   mutate(Andel = round(Kostnad/sum(Kostnad)*100, digits = 1))%>%
   filter(Deler == "Kjøp")
 
