@@ -2,7 +2,10 @@
 title: "Kvalitet til stryk"
 author: "Thomas Tallaksen, rådgiver Fagforbundet"
 date: "3. September 2019"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -56,14 +59,19 @@ Det kan diskuteres om det i det hele tatt lar seg gjøre å måle kvalitet på e
 
 ## 2. Er sammenhengen mellom privatisering og kvalitetsmålene deres i det hele tatt signifikant?
 
-Det er altså gode grunner til å ta kvalitetsscoren NHO-SH har utarbeidet med en stor klype salt. Men om vi for argumentets skyld lar det ligge, er det faktisk enda større problemer med hvordan NHO-SH hevder å kunne vise at det er en sammenheng mellom kvalitetsscoren til den enkelte kommunen og hvorvidt kommunen kjøper eksterne tjenester.
+Det er altså gode grunner til å ta kvalitetsscoren NHO-SH har utarbeidet med en stor klype salt. Men om vi for argumentets skyld lar det ligge, så finner vi heller ingen signifikant sammenheng mellom kvalitetsscoren NHO har laget og hvorvidt kommunen kjøper eksterne tjenester. Dette til tross for at nettopp en slik sammenheng virker å være hovedpoenget når NHO-SH og Kaltenborn presenterer resultatene.
 
-Måten de bruker for å vise denne sammenhengen er ved å sammenlikne kommuner som kjøper en større andel av tjenestene sine enn snittet, med kommuner som kjøper en mindre andel av tjenestene enn snittet. Her finner de at gruppen som kjøper flere tjenester enn snittet har tre prosentpoengs høyere gjennomsnittlig kvalitetscore enn de som kjøper mindre enn snittet.
+Måten rapportene bruker for å vise denne sammenhengen er ved å sammenlikne kommuner som kjøper en større andel av tjenestene sine enn snittet, med kommuner som kjøper en mindre andel av tjenestene enn snittet. Her finner de at gruppen som kjøper flere tjenester enn snittet har tre prosentpoengs høyere gjennomsnittlig kvalitetscore enn de som kjøper mindre (se figur under).
 
+\  
+
+<p>
 ![Figuren hvor NHO viser sammenhengen mellom kvalitet og orivatisering. Figuren kan gjenfinnes på side 33 i den enkelte kommunale rapporten.](Sammenheng.png){ width=70% }
+</p>
 
 Dette er en veldig grov inndeling for å skulle vise en slik sammenheng, og NHO-SH oppgir ingen steder hvorvidt denne forskjellen på 3 prosentpoeng mellom de to gruppene faktisk er signifikant. Det skal vi derfor teste. 
 
+\  
 
 ### Signifikanstest
 
@@ -110,4 +118,6 @@ ggplot(graf, aes(y = `Score, kvalitet`, x = Andel))+
 
 Om vi deler gruppene inn på måten NHO-SH selv har gjort det, med en gruppe bestående av de kommunene som kjøper over gjennomsnittet mange tjenester fra private, og en med de kommunene som kjøper mindre, finner vi at gjennomsnittet i den enkelte gruppa dekker over svært stor variasjon. Begge grupper har store standardavvik, og variasjonen internt i de to gruppene er overlappende. Det vil si at det er mange av kommunene som er med i gruppa som kjøper mer tjenester fra private som har lavere kvalitetsscore enn de som er i gruppa som kjøper mindre, og motsatt. **Om vi gjennomfører en enkelt T-test får vi en t-verdi på -0,9, som betyr at sammenhengen heller ikke er signifikant om vi bruker den grove inndelingen NHO selv har valgt.** 
 
-Hadde vi faktisk sett en sammenheng ville vanligvis det neste spørsmålet være om det fantes noen bakenforliggende årsaker vi måtte kontrollert for. Her er imidlertid dette ikke nødvendig siden det ikke engang er noen signifikant korrelasjon til å begynne med.
+## Oppsummering
+
+Vi har tatt NHO Service og handel og administrerende direktør Anne Cecilie Kaltenborn på ordet, og har gjennomgått tallene de har presentert som grunnlag for påstanden om at større kjøp av tjenester fra eksterne fører til høyere kvalitet i helse- og omsorgstjenestene. Vi kan hverken se at NHO-SH har operasjonalisert kvalitet på noen god måte, og sammenhengen de hevder å ha funnet er altså med nærmere ettersyn ikke signifikant. 
