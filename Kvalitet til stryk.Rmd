@@ -1,7 +1,7 @@
 ---
 title: "Kvalitet til stryk"
 author: "Thomas Tallaksen"
-date: "8/23/2019"
+date: "9/03/2019"
 output: pdf_document
 ---
 
@@ -13,13 +13,13 @@ library(tidyverse)
 library(ggpubr)
 
 #Importerer bakgrunnstallene fra NHOanalysen og tall på privatisering fra SSB 12367
-
-dea <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/190702_dea-analyse-resultat-og-input.xlsx")%>%
+dea <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/190830_dea-analyse-resultat-og-input.xlsx")%>%
   mutate(Kommunenr = str_pad(Kommunenr, width=4, side="left", pad="0"))
-
 ssb <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/KOSbelop0000.xlsx")
 
-ssb$`2017` <- as.numeric(ssb$`2017`)
+# Endrer beløpene i SSB-tallene til numeric
+ssb$Beløp <- as.numeric(ssb$Beløp)
+
 
 
 ```
@@ -37,7 +37,7 @@ Dagens Næringsliv, 23.08.19
 
 ## Formål
 
-I dette notatet gjør jeg nettopp det Anne Cecilie Kalternborn oppfordrer til i leserinnlegget over. Jeg gjennomgår tallgrunnlaget og metoden NHO Service og Handel (heretter NHO-SH) benytter i rapportene i Kvalitet 19. NHO-SH har utarbeidet rapporter for en lang rekke kommuner, og hevder å kunne vise at det er en sammenheng mellom kvalitet og andelen av utgiftene i helse- og omsorgstjenestene som brukes på kjøp av eksterne tjenester. Jeg sjekker hva som inngår i tallene deres og om det er noen signifikant korrelasjon mellom kvalitetsindikatoren NHO-SH bruker og andelen av utgiftene som går til kjøp fra private. **Ved nærmere ettersyn viser både kvalitetsbegrepet deres å være tynt, og sammenhengen de hevder å ha funnet viser seg å være ikke-eksisterende.**
+I dette notatet gjør jeg nettopp det Anne Cecilie Kalternborn oppfordrer til i leserinnlegget over. Jeg gjennomgår tallgrunnlaget og metoden NHO Service og Handel (heretter NHO-SH) benytter i rapportene i Kvalitet 19. NHO-SH har utarbeidet rapporter for en lang rekke kommuner, og hevder å kunne vise at det er en sammenheng mellom kvalitet og andelen av utgiftene i helse- og omsorgstjenestene som brukes på kjøp av eksterne tjenester. Jeg sjekker hva som inngår i tallene deres og om det er noen signifikant korrelasjon mellom kvalitetsindikatoren NHO-SH bruker og andelen av utgiftene som går til kjøp fra private. **Ved nærmere ettersyn viser både kvalitetsbegrepet deres å være tynt, og sammenhengen de hevder å ha funnet er ikke-eksisterende.**
 
 NHO-SH har også sett på kostnadseffektiviteten i kommunene for Helse og omsorsgtjenester og renovasjon og renhold. Jeg har ikke gått nærmere inn på disse tallene, siden det er beregningene av kvalitet NHO-SH selv har lagt vekt på i fremstillingen av konklusjonene. 
 
@@ -58,7 +58,7 @@ Det kan diskuteres om det i det hele tatt lar seg gjøre å måle kvalitet på e
 
 Det er altså gode grunner til å ta kvalitetsscoren NHO-SH har utarbeidet med en stor klype salt. Men om vi for argumentets skyld lar det ligge, er det faktisk enda større problemer med hvordan NHO-SH hevder å kunne vise at det er en sammenheng mellom kvalitetsscoren til den enkelte kommunen og hvorvidt kommunen kjøper eksterne tjenester.
 
-Måten de bruker for å vise at det er en sammenheng mellom kvalitet og andelen private velferdstjenester er ved å sammenlikne kommuner som kjøper en større andel av tjenestene sine enn snittet, med kommuner som kjøper en mindre andel av tjenestene enn snittet. Her finner de at gruppen som kjøper flere tjenester enn snittet har tre prosentpoengs høyere gjennomsnittlig kvalitetscore enn de som kjøper mindre enn snittet.
+Måten de bruker for å vise denne sammenhengen er ved å sammenlikne kommuner som kjøper en større andel av tjenestene sine enn snittet, med kommuner som kjøper en mindre andel av tjenestene enn snittet. Her finner de at gruppen som kjøper flere tjenester enn snittet har tre prosentpoengs høyere gjennomsnittlig kvalitetscore enn de som kjøper mindre enn snittet.
 
 ![Figuren hvor NHO viser sammenhengen mellom kvalitet og orivatisering. Figuren kan gjenfinnes på side 33 i den enkelte kommunale rapporten.](Sammenheng.png){ width=70% }
 
@@ -67,54 +67,47 @@ Dette er en veldig grov inndeling for å skulle vise en slik sammenheng, og NHO-
 
 ### Signifikanstest
 
-For å kunne ettergå påstandene til NHO-SH må vi først ha de samme dataene. Kaltenborn sier i innlegget i DN at dataene er fritt tilgjengelig fra Helse Norge og SSB. Bakgrunnstallene for kvalitetsberegningene har NHO-SH publisert på rapportens nettside, men tallene for andel eksterne kjøp i kommunene var det mer krevende å finne. Under grafen som er gjengitt over står det at kilden til dataene er SSBs tabell 12367, men denne tabellen inneholder en lang rekke ulike regnskapskategorier. Kvalitet19-rapportene inneholder andel kjøp fra eksterne i den enkelte kommunen fordelt på hjemmebasert omsorg og institusjoner. Ved hjelp av disse tallene prøvde jeg meg fram med kategoriene i SSBs tabell 12367 og fant at ved å dele kommunens tall fra posten "A370 - Kjøp fra andre (private)" på totalen i "AGD4 - Korrigerte brutto driftsutgifter på funksjon/tjenesteområde", så fikk jeg tall som samsvarte med NHOs tall. Det skilte med 0,1 prosentpoeng noen steder, men det ser ut som det kan skyldes at NHO-tallene er feil rundet av av og til.
+For å teste hvorvidt sammenhengen er signifikant måtte vi først reprodusere tallene til NHO, noe som viste seg å være vanskeligere enn først antatt. For det første fikk vi opplyst, etter å ha henvendt oss til NHO Service og Handel direkte, at tall for kjøp fra andre kommuner også inngår i tallene for kjøp. Det utgjør ikke de helt store summene, men når Kaltenborn bruker tallene for å argumentere for effekten av å kjøpe flere tjenester av private er det merkelig å også inkludere kjøp fra kommuner. Det var også oppgitt at antall kommuner som ligger bak beregningen av gjennomsnittlig andel eksterne kjøp var 190, men i tallene NHO selv hadde oppgitt var det kun kvalitetsscore for 178 kommuner. Etter å ha kontaktet NHO-SH rettet de opp i denne feilen og publiserte kvalitetsscoren for de resterende 12 kommunene. 
 
-Etter å ha fått tak i tallene kan vi derfor prøve å plotte dem og se om vi finner noen korrelasjon mellom kvalitet og eksterne kjøp. Som vi ser av tabellen under er den sammenhengen slett ikke så robust som den NHO skal ha det til. Den er faktisk ikke-eksisterende. 
+Dersom vi ser på den den bivariate sammenhengen mellom andelen eksterne kjøp og kvalitetsscoren den enkelte kommunen får, er det ingen sammenheng å spore (se graf under). Sammenhengen mellom de to variablene er ikke signifikant. Med en enkel regresjonsanalyse (OLS) får vi et stigningstall (R) på 0,095, og en signifikansverdi på 0,19 (p). Det vil si at en kommune som har  kjøpt 10 prosentpoeng mer eksterne tjenester har en kvalitetsscore som er 0,95 poeng høyere, men at dette er feil i en av fem tilfeller. **Stigningstallet er så lav og signifikansverdien så høy at det rett og slett ikke er noen sammenheng å spore i tallene.** I samfunnsvitenskap pleier man å operere med at signifikansverdien p maksimalt kan være 0,05, mens det her altså er 0,19, skyhøyt over hva som kan regnes som en faktisk sammenheng. 
 
 ```{r corr, warning = FALSE, fig.height = 3.5, fig.width = 4, fig.align = "center"}
 
-# Denne ble brukt for å teste om tallene per funksjonsområde stemte med rapportene
-per_funksjon <- ssb%>%
-  filter(Art_nr %in% c("A370", "AGD4"))%>%
-  group_by(Kommunenummer, Kommunenavn, Funksjon, Art)%>%
-  summarise(Kostnad = sum(`2017`, na.rm = TRUE))%>%
-  ungroup()%>%
-  group_by(Kommunenummer, Kommunenavn, Funksjon)%>%
-  mutate(Andel = round(Kostnad/sum(Kostnad)*100, digits = 1))
-
-# Finner andel private kjøp ved å sammenlikne artikkelnummerene A370 og AGD4
 samlet <- ssb%>%
-  filter(Art_nr %in% c("A370", "AGD4"))%>%
-  group_by(Kommunenummer, Kommunenavn, Art)%>%
-  summarise(Kostnad = sum(`2017`, na.rm = TRUE))%>%
-  ungroup()%>%
-  group_by(Kommunenummer, Kommunenavn)%>%
+  filter(Artikkelnummer %in% c("AG2", "A370", "AGD4", "A590"))%>%
+  filter(Funksjon != "Institusjonslokaler" | Artikkelnummer != "A370")%>%
+  group_by(Kommunenummer, Kommune, Funksjon, Artikkelnummer, Artikkel)%>%
+  summarise(Kostnad = sum(Beløp, na.rm = TRUE))%>%  
+  ungroup()%>%   
+  mutate(Deler = ifelse(Artikkelnummer %in% c("A370", "AG2"), "Kjøp", "Kostnader"))%>%
+  mutate(Kostnad = ifelse(Artikkelnummer == "A590", -Kostnad, Kostnad))%>%
+  group_by(Kommunenummer, Kommune, Deler)%>%
+  summarise(Kostnad = sum(Kostnad))%>%
   mutate(Andel = round(Kostnad/sum(Kostnad)*100, digits = 1))%>%
-  filter(Art == "Kjøp fra andre (private)")%>%
-  select(Kommunenummer, Kommunenavn, Andel)
+  filter(Deler == "Kjøp")
 
-# Joiner inn kvalitetstallene
 sammenkoblet <- dea%>%
+  select(Kommunenr, `Kommune fullt navn`, `Score, kvalitet`)%>%
+  left_join(samlet, by = c("Kommunenr" = "Kommunenummer"))%>%
+  mutate(Snitt = ifelse(Andel > 6.5, "Over", "Under"))%>%
+  na.omit()%>%
+  group_by(Snitt)%>%
+  summarise("Antall kommuner" = n(), Snittkvalitet = round(mean(`Score, kvalitet`), digits = 2), Standardavvik = sd(`Score, kvalitet`))
+
+graf <- dea%>%
   select(Kommunenr, `Kommune fullt navn`, `Score, kvalitet`)%>%
   left_join(samlet, by = c("Kommunenr" = "Kommunenummer"))
 
-# Plotter sammenhengen og lager regresjonslinje
-ggplot(sammenkoblet, aes(y = `Score, kvalitet`, x = Andel))+
+ggplot(graf, aes(y = `Score, kvalitet`, x = Andel))+
   geom_point()+
   xlim(0,40)+
+  xlab("Andel eksterne kjøp")+
   geom_smooth(method='lm')+
-  ylab("Kvalitetsscore")+
-  ggtitle("Kvalitet vs. kjøp fra eksterne")+
-  stat_cor(method = "pearson", label.x = 25, label.y = 35)
+  stat_cor(method = "pearson", label.x = 20, label.y = 30)
 
 
 ```
 
+Om vi deler gruppene inn på måten NHO-SH selv har gjort det, med en gruppe bestående av de kommunene som kjøper over gjennomsnittet mange tjenester fra private, og en med de kommunene som kjøper mindre, finner vi at gjennomsnittet i den enkelte gruppa dekker over svært stor variasjon. Begge grupper har store standardavvik, og variasjonen internt i de to gruppene er overlappende. Det vil si at det er mange av kommunene som er med i gruppa som kjøper mer tjenester fra private som har lavere kvalitetsscore enn de som er i gruppa som kjøper mindre, og motsatt. **Om vi gjennomfører en enkelt T-test får vi en t-verdi på -0,9, som betyr at sammenhengen heller ikke er signifikant om vi bruker den grove inndelingen NHO selv har valgt.** 
 
-
-
-
-
-
-
-Hadde vi faktisk sett en sammenheng ville vanligvis det neste spørsmålet være om det fantes noen bakenforliggende årsaker vi måtte kontrollert for. Her er imidlertid dette ikke nødvendig siden det ikke engang er noen korrelasjon til å begynne med. 
+Hadde vi faktisk sett en sammenheng ville vanligvis det neste spørsmålet være om det fantes noen bakenforliggende årsaker vi måtte kontrollert for. Her er imidlertid dette ikke nødvendig siden det ikke engang er noen signifikant korrelasjon til å begynne med.
