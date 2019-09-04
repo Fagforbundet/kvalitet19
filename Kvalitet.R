@@ -1,6 +1,7 @@
 library(readxl)
 library(tidyverse)
 library(ggpubr)
+library(openxlsx)
 
 #Importerer bakgrunnstallene fra NHOanalysen og tall på privatisering fra SSB 12367
 dea <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/190830_dea-analyse-resultat-og-input.xlsx")%>%
@@ -22,10 +23,14 @@ samlet <- ssb%>%
   mutate(Andel = round(Kostnad/sum(Kostnad)*100, digits = 1))%>%
   filter(Deler == "Kjøp")
 
-sammenkoblet <- dea%>%
+nho_inndeling <- dea%>%
   select(Kommunenr, `Kommune fullt navn`, `Score, kvalitet`)%>%
   left_join(samlet, by = c("Kommunenr" = "Kommunenummer"))%>%
-  mutate(Snitt = ifelse(Andel > 6.5, "Over", "Under"))%>%
+  mutate(Snitt = ifelse(Andel > 6.5, "Over", "Under"))
+
+write.xlsx(nho_inndeling, "bakgrunnstall.xlsx")
+  
+t_test <- nho_inndeling%>%  
   na.omit()%>%
   group_by(Snitt)%>%
   summarise("Antall kommuner" = n(), Snittkvalitet = round(mean(`Score, kvalitet`), digits = 2), Standardavvik = sd(`Score, kvalitet`))
