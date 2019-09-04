@@ -28,6 +28,8 @@ nho_inndeling <- dea%>%
   left_join(samlet, by = c("Kommunenr" = "Kommunenummer"))%>%
   mutate(Snitt = ifelse(Andel > 6.5, "Over", "Under"))
 
+alpha(nho_inndeling)
+
 write.xlsx(nho_inndeling, "bakgrunnstall.xlsx")
   
 t_test <- nho_inndeling%>%  
@@ -39,10 +41,10 @@ graf <- dea%>%
   select(Kommunenr, `Kommune fullt navn`, `Score, kvalitet`)%>%
   left_join(samlet, by = c("Kommunenr" = "Kommunenummer"))
 
-ggplot(graf, aes(y = `Score, kvalitet`, x = Andel))+
+ggplot(graf, aes(y = log(`Score, kvalitet`), x = Andel))+
   geom_point()+
   xlim(0,40)+
   geom_smooth(method='lm')+
-  stat_cor(method = "pearson", label.x = 25, label.y = 30)
+  stat_cor(method = "pearson", label.x = 20, label.y = 5)
 
   

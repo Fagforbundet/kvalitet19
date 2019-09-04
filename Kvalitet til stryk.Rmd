@@ -16,14 +16,10 @@ library(tidyverse)
 library(ggpubr)
 
 #Importerer bakgrunnstallene fra NHOanalysen og tall på privatisering fra SSB 12367
-dea <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/190830_dea-analyse-resultat-og-input.xlsx")%>%
+dea <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/NHOs tall.xlsx")%>%
   mutate(Kommunenr = str_pad(Kommunenr, width=4, side="left", pad="0"))
-ssb <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/KOSbelop0000.xlsx")
-
-# Endrer beløpene i SSB-tallene til numeric
+ssb <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/SSB-tall.xlsx")
 ssb$Beløp <- as.numeric(ssb$Beløp)
-
-
 
 ```
 
@@ -77,7 +73,7 @@ Dette er en veldig grov inndeling for å skulle vise en slik sammenheng, og NHO-
 
 For å teste hvorvidt sammenhengen er signifikant måtte vi først reprodusere tallene til NHO, noe som viste seg å være vanskeligere enn først antatt. For det første fikk vi opplyst, etter å ha henvendt oss til NHO Service og Handel direkte, at tall for kjøp fra andre kommuner også inngår i tallene for kjøp. Det utgjør ikke de helt store summene, men når Kaltenborn bruker tallene for å argumentere for effekten av å kjøpe flere tjenester av private er det merkelig å også inkludere kjøp fra kommuner. Det var også oppgitt at antall kommuner som ligger bak beregningen av gjennomsnittlig andel eksterne kjøp var 190, men i tallene NHO selv hadde oppgitt var det kun kvalitetsscore for 178 kommuner. Etter å ha kontaktet NHO-SH rettet de opp i denne feilen og publiserte kvalitetsscoren for de resterende 12 kommunene. 
 
-Dersom vi ser på den den bivariate sammenhengen mellom andelen eksterne kjøp og kvalitetsscoren den enkelte kommunen får, er det ingen sammenheng å spore (se graf under). Sammenhengen mellom de to variablene er ikke signifikant. Med en enkel regresjonsanalyse (OLS) får vi et stigningstall (R) på 0,095, og en signifikansverdi på 0,19 (p). Det vil si at en kommune som har  kjøpt 10 prosentpoeng mer eksterne tjenester har en kvalitetsscore som er 0,95 poeng høyere, men at dette er feil i en av fem tilfeller. **Stigningstallet er så lav og signifikansverdien så høy at det rett og slett ikke er noen sammenheng å spore i tallene.** I samfunnsvitenskap pleier man å operere med at signifikansverdien p maksimalt kan være 0,05, mens det her altså er 0,19, skyhøyt over hva som kan regnes som en faktisk sammenheng. 
+Dersom vi ser på den den bivariate sammenhengen mellom andelen eksterne kjøp og kvalitetsscoren den enkelte kommunen får, er det ingen sammenheng å spore (se graf under). Sammenhengen mellom de to variablene er ikke signifikant. Med korrelasjonsmålet Pearsons R får vi et stigningstall (R) på 0,095, og en signifikansverdi på 0,19 (p). Det vil si at en kommune som har  kjøpt 10 prosentpoeng mer eksterne tjenester har en kvalitetsscore som er 0,95 poeng høyere, men at dette er feil i en av fem tilfeller. **Stigningstallet er så lav og signifikansverdien så høy at det rett og slett ikke er noen sammenheng å spore i tallene.** I samfunnsvitenskap pleier man å operere med at signifikansverdien p maksimalt kan være 0,05, mens det her altså er 0,19, skyhøyt over hva som kan regnes som en faktisk sammenheng. 
 
 ```{r corr, warning = FALSE, fig.height = 3.5, fig.width = 4, fig.align = "center"}
 
