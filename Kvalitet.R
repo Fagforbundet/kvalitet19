@@ -4,9 +4,9 @@ library(ggpubr)
 library(openxlsx)
 
 #Importerer bakgrunnstallene fra NHOanalysen og tall på privatisering fra SSB 12367
-dea <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/190830_dea-analyse-resultat-og-input.xlsx")%>%
+dea <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/NHOs tall.xlsx")%>%
   mutate(Kommunenr = str_pad(Kommunenr, width=4, side="left", pad="0"))
-ssb <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/KOSbelop0000.xlsx")
+ssb <- read_excel("/Users/thomastallaksen/Documents/R/Prosjekter/Kvalitet19/SSB-tall.xlsx")
 ssb$Beløp <- as.numeric(ssb$Beløp)
 
 
